@@ -4,6 +4,10 @@ from sympy import (
 )
 from sympy.utilities.codegen import codegen
 
+from utilities.indexify import indexify
+from utilities.undummy import undummy
+from sympy import Eq, IndexedBase, Idx
+
 P = PermutationOperator
 
 def _report(expr):
@@ -117,9 +121,6 @@ def generate_expressions(expr, dummies):
     return overlaps
 
 def get_routines(expr, description=""):
-    from sympy.private.indexify import indexify
-    from sympy.private.undummy import undummy
-    from sympy import Eq, IndexedBase, Idx
     project_descr = 'overlaps'
 
     below_orbs = Symbol('below_orbs', integer=True)
