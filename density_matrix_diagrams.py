@@ -8,28 +8,13 @@ from utilities.indexify import indexify
 from utilities.undummy import undummy
 from sympy import Eq, IndexedBase, Idx
 
+from utilities.ccm import get_CC_operators
+
 P = PermutationOperator
 
 def _report(expr):
     # return str(expr)
     return latex(expr, mode='inline')
-
-def get_CC_operators():
-	"""
-	Returns a tuple (T1,T2) of unique operators.
-	"""
-	i = symbols('i',below_fermi=True,dummy=True)
-	a = symbols('a',above_fermi=True,dummy=True)
-	t_ai = AntiSymmetricTensor('t',(a,),(i,))
-	ai = NO(Fd(a)*F(i))
-	i,j = symbols('ij',below_fermi=True,dummy=True)
-	a,b = symbols('ab',above_fermi=True,dummy=True)
-	t_abij = AntiSymmetricTensor('t',(a,b),(i,j))
-	abji = NO(Fd(a)*Fd(b)*F(j)*F(i))
-
-	T1 = t_ai*ai
-	T2 = Number((1,4))*t_abij*abji
-	return (T1,T2)
 
 my_dummies={}
 my_dummies['below'] = "ijklm"

@@ -2,26 +2,10 @@ from sympy.physics.secondquant import *
 from sympy import (
     symbols, expand, pprint, Number, latex, Function, preview, Symbol
 )
+from utilities.ccm import get_CC_operators
 
 P = PermutationOperator
 C = Commutator
-
-def get_CC_operators():
-	"""
-	Returns a tuple (T1,T2) of unique operators.
-	"""
-	i = symbols('i',below_fermi=True,dummy=True)
-	a = symbols('a',above_fermi=True,dummy=True)
-	t_ai = SymmetricTensor('t',a,i)
-	ai = NO(Fd(a)*F(i))
-	i,j = symbols('ij',below_fermi=True,dummy=True)
-	a,b = symbols('ab',above_fermi=True,dummy=True)
-	t_abij = AntiSymmetricTensor('t',(a,b),(i,j))
-	abji = NO(Fd(a)*Fd(b)*F(j)*F(i))
-
-	T1 = t_ai*ai
-	T2 = Number((1,4))*t_abij*abji
-	return (T1,T2)
 
 print "Setting up hamiltonian"
 p,q,r,s = symbols('pqrs',dummy=True)
