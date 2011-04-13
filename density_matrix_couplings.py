@@ -37,15 +37,8 @@ def _report(expr):
     # print latex(expr, mode='dmath', mul_symbol='dot')
     print
 
-def make_spherical_sp_states(str1):
-    states = []
-    for i in symbols(str1):
-        states.append(SphFermKet(i))
-    return states
-
-
-i, j, k, l = make_spherical_sp_states('i j k l')
-a, b, c, d = make_spherical_sp_states('a b c d')
+i, j, k, l = map(SphFermKet, 'ijkl')
+a, b, c, d = map(SphFermKet, 'abcd')
 
 # EOM operators
 

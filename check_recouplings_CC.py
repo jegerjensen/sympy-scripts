@@ -58,18 +58,8 @@ def make_tensor_operators(str1, assumption_str=None):
 
     return tensors
 
-def make_spherical_sp_states(str1):
-    states = []
-    for i in symbols(str1):
-        states.append(SphFermKet(i))
-    return states
-
-
-
-
-
-i, j, k, l = make_spherical_sp_states('i j k l')
-a, b, c, d = make_spherical_sp_states('a b c d')
+i, j, k, l = map(SphFermKet, 'ijkl')
+a, b, c, d = map(SphFermKet, 'abcd')
 
 LA, RA = make_tensor_operators('J_A M_A J_A M_A',Q.integer)
 LAm1,RAm1 = make_tensor_operators('J_Am1 M_Am1 J_Am1 M_Am1','half_integer')
@@ -251,8 +241,6 @@ SF = Symbol('SF')
 
 
 
-i, j, k, l = make_spherical_sp_states('i j k l')
-a, b, c, d = make_spherical_sp_states('a b c d')
 
 LA, RA = make_tensor_operators('J_A M_A J_A M_A',Q.integer)
 LAm1,RAm1 = make_tensor_operators('J_Am1 M_Am1 J_Am1 M_Am1','half_integer')

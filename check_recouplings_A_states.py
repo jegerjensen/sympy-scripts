@@ -82,19 +82,8 @@ class ReducedMatrixElement_gaute(ReducedMatrixElement):
 import sympy
 sympy.physics.braket.ReducedMatrixElement_gaute = ReducedMatrixElement_gaute
 
-
-def make_spherical_sp_states(str1):
-    states = []
-    for i in symbols(str1):
-        states.append(SphFermKet(i))
-    return states
-
-
-
-
-
-i, j, k, l = make_spherical_sp_states('i j k l')
-a, b, c, d = make_spherical_sp_states('a b c d')
+i, j, k, l = map(SphFermKet, 'ijkl')
+a, b, c, d = map(SphFermKet, 'abcd')
 
 X = SphericalTensorOperator('X', S.Zero, S.Zero)
 
