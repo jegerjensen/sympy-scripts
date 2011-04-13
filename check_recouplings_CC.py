@@ -65,8 +65,8 @@ def make_spherical_sp_states(str1):
     return states
 
 
-Ket = FermKet
-Bra = FermBra
+
+
 
 i, j, k, l = make_spherical_sp_states('i j k l')
 a, b, c, d = make_spherical_sp_states('a b c d')
@@ -248,8 +248,8 @@ print fcode(relation_mine_ito_gautes)
 SF = Symbol('SF')
 
 """
-Ket = FermKet
-Bra = FermBra
+
+
 
 i, j, k, l = make_spherical_sp_states('i j k l')
 a, b, c, d = make_spherical_sp_states('a b c d')

@@ -72,8 +72,8 @@ def _report(expr):
 SF = Symbol('SF')
 
 
-Ket = FermKet
-Bra = FermBra
+
+
 
 i, j, k, l = make_spherical_sp_states('i j k l')
 a, b, c, d = make_spherical_sp_states('a b c d')
