@@ -19,6 +19,7 @@ from sympy import (
 import sys
 
 from utilities.redmats import ReducedMatrixElement_left, ReducedMatrixElement_right
+from utilities.ccm_sph import *
 
 pprint_use_unicode(False)
 def _report(expr):
@@ -59,21 +60,6 @@ def make_spherical_sp_states(str1):
 i, j, k, l = make_spherical_sp_states('i j k l')
 a, b, c, d = make_spherical_sp_states('a b c d')
 
-J_A = Symbol('J_A', nonnegative=True)
-M_A = Symbol('M_A')
-J_Ap1 = Symbol('J_Ap1', nonnegative=True)
-M_Ap1 = Symbol('M_Ap1')
-braket_assumptions.add(Assume(J_A, Q.integer))
-braket_assumptions.add(Assume(M_A, Q.integer))
-braket_assumptions.add(Assume(J_Ap1, 'half_integer'))
-braket_assumptions.add(Assume(M_Ap1, 'half_integer'))
-
-LA = DualSphericalTensorOperator('L', J_A, M_A)
-LAp1 = DualSphericalTensorOperator('L', J_Ap1, M_Ap1)
-RA = SphericalTensorOperator('R', J_A, M_A)
-RAp1 = SphericalTensorOperator('R', J_Ap1, M_Ap1)
-V = SphericalTensorOperator('V', S.Zero, S.Zero)
-T = SphericalTensorOperator('T', S.Zero, S.Zero)
 
 print
 print "Defined tensor operators:"

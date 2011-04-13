@@ -18,6 +18,7 @@ from sympy import (
         )
 import sys
 
+from utilities.ccm_sph import *
 pprint_use_unicode(False)
 
 
@@ -92,21 +93,12 @@ def make_spherical_sp_states(str1):
 i, j, k, l = make_spherical_sp_states('i j k l')
 a, b, c, d = make_spherical_sp_states('a b c d')
 
-J_A = Symbol('J_A', nonnegative=True)
-M_A = Symbol('M_A')
-J_Am1 = Symbol('J_Am1', nonnegative=True)
-M_Am1 = Symbol('M_Am1')
-braket_assumptions.add(Assume(J_A, Q.integer))
-braket_assumptions.add(Assume(M_A, Q.integer))
-braket_assumptions.add(Assume(J_Am1, 'half_integer'))
-braket_assumptions.add(Assume(M_Am1, 'half_integer'))
-
+# overwrite those imported from ccm_sph
 LA = SphericalTensorOperator('L', J_A, M_A)
 LAm1 = SphericalTensorOperator('L', J_Am1, M_Am1)
 RA = DualSphericalTensorOperator('R', J_A, M_A)
 RAm1 = DualSphericalTensorOperator('R', J_Am1, M_Am1)
 X = SphericalTensorOperator('X', S.Zero, S.Zero)
-T = SphericalTensorOperator('T', S.Zero, S.Zero)
 
 print
 print "Defined tensor operators:"
