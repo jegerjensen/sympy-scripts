@@ -60,7 +60,7 @@ print latex(val_i)
 print
 print "r_aij"
 val_aij = wicks(NO(Fd(i1)*Fd(i2)*F(a1))*Hbar*R,keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
-val_aij = substitute_dummies(val_aij,new_indices=True, reverse_order=True)
+val_aij = substitute_dummies(val_aij,new_indices=True)
 val_aij = simplify_index_permutations(val_aij,[P(i1,i2)])
 print latex(val_aij)
 # preview(val_aij,output="dvi")
@@ -88,7 +88,7 @@ print latex(val_i)
 print
 print "l_aij"
 val_aij = wicks(L*Hbar*NO(Fd(a1)*F(i2)*F(i1)),keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
-val_aij = substitute_dummies(val_aij,new_indices=True, reverse_order=True)
+val_aij = substitute_dummies(val_aij,new_indices=True)
 val_aij = simplify_index_permutations(val_aij,[P(a1,a2),P(i1,i2)])
 print latex(val_aij)
 # preview(val_aij,output="dvi")
@@ -115,11 +115,10 @@ print latex(val_ai)
 print
 print "r_abij"
 val_abij = wicks(NO(Fd(i1)*Fd(i2)*F(a2)*F(a1))*Hbar*R,keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
-val_abij = substitute_dummies(val_abij,new_indices=True, reverse_order=True)
+val_abij = substitute_dummies(val_abij,new_indices=True)
 val_abij = simplify_index_permutations(val_abij,[P(i1,i2), P(a1,a2)])
 print latex(val_abij)
 # preview(val_abij,output="dvi")
-
 
 
 
@@ -143,7 +142,7 @@ print latex(val_ai)
 print
 print "l_abij"
 val_abij = wicks(L*Hbar*NO(Fd(a1)*Fd(a2)*F(i2)*F(i1)),keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
-val_abij = substitute_dummies(val_abij,new_indices=True, reverse_order=True)
+val_abij = substitute_dummies(val_abij,new_indices=True)
 val_abij = simplify_index_permutations(val_abij,[P(a1,a2),P(i1,i2)])
 print latex(val_abij)
 # preview(val_abij,output="dvi")
@@ -169,7 +168,7 @@ print latex(val_ab)
 print
 print "r_abci"
 val_abci = wicks(NO(Fd(i1)*F(a3)*F(a2)*F(a1))*Hbar*R,keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
-val_abci = substitute_dummies(val_abci,new_indices=True, reverse_order=True)
+val_abci = substitute_dummies(val_abci,new_indices=True)
 val_abci = simplify_index_permutations(val_abci,[P(i1,i2), P(a1,a2)])
 print latex(val_abci)
 # preview(val_abci,output="dvi")
