@@ -64,7 +64,7 @@ def indexify(expr):
         else:
             raise ValueError("Couldn't determine shape of %s" % at)
 
-        base = IndexedBase("%s_%i" %(at.symbol, len(inds)), shape=shp)
+        base = IndexedBase("%s_%i" %(at.symbol, (len(inds)+1)/2), shape=shp)
 
         new_at = base[inds.args]
         expr = expr.subs(at, new_at)
