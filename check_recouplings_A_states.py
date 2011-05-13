@@ -130,17 +130,6 @@ _report(Eq(x_kcjb, x_kcjb_sph.get_direct_product_ito_self(tjs=0)))
 print
 _report(fcode(x_kcjb_sph.get_direct_product_ito_self(tjs=1)))
 
-print
-print "*************** <k b| X | i j> *****************"
-print
-
-x_kbij = MatrixElement((Dagger(k), Dagger(b)), X, (i, j))
-x_kbij_sph = ReducedMatrixElement(SphFermBra('kb', Dagger(k), Dagger(b), reverse=0), X, SphFermKet('ij', i,j, reverse=0))
-_report(Eq(x_kbij, x_kbij_sph.get_direct_product_ito_self(tjs=0)))
-
-print
-_report(fcode(x_kbij_sph.get_direct_product_ito_self(tjs=1)))
-
 
 print
 print "*************** <a| T | i> *****************"
@@ -256,6 +245,12 @@ sys.exit()
 print
 print "****************** Right A, r_abij = X_kbij*r_ak **************"
 print
+
+
+x_kbij = MatrixElement((Dagger(k), Dagger(b)), X, (i, j))
+x_kbij_sph = ReducedMatrixElement(SphFermBra('kb', Dagger(k), Dagger(b), reverse=0), X, SphFermKet('ij', i,j, reverse=0))
+_report(Eq(x_kbij, x_kbij_sph.get_direct_product_ito_self(tjs=0)))
+
 
 diagram = Symbol('I4_R1')
 
