@@ -3,6 +3,7 @@ from sympy import (
     symbols, expand, pprint, Number, latex, Function, preview, Symbol
 )
 from sympy.utilities.codegen import codegen
+from sympy.utilities.codegen import ExprSplitter
 
 from utilities.indexify import indexify
 from utilities.undummy import undummy
@@ -127,9 +128,13 @@ def get_routines(expr, description=""):
     expr_a = indexify(Eq(lhs_a, expr_a))
     print "expr_a is", expr_a
 
+    spl = ExprSplitter('overlap_%s_i' %description)
+    routines = spl.spawn_routines(expr_i)
 
-    return [('overlap_i'+description, expr_i),
-            ('overlap_a'+description, expr_a)]
+    spl = ExprSplitter('overlap_%s_a' %description)
+    routines.extend(spl.spawn_routines(expr_a))
+
+    return routines
 
 
 
@@ -159,7 +164,7 @@ print
 print "A a A+1"
 print
 print _report(overlaps)
-# routines.extend(get_routines(overlaps, "_AAp1"))
+routines.extend(get_routines(overlaps, "_AAp1"))
 
 # < A+1 | c' | A >
 overlaps = generate_expressions(L_Ap1*crebar*R_A, my_dummies)
@@ -167,8 +172,8 @@ print
 print "A+1 a' A"
 print
 print _report(overlaps)
-# routines.extend(get_routines(overlaps, "_Ap1A"))
+routines.extend(get_routines(overlaps, "_Ap1A"))
 
 
-# codegen(routines, 'f95', 'code/sympy_overlaps', to_files=True, project='overlaps')
+codegen(routines, 'f95', 'code/overlaps/sympy_overlaps_Ap1', to_files=True, project='overlaps')
 

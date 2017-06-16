@@ -19,6 +19,7 @@ from sympy import (
 import sys
 
 from utilities.ccm_sph import *
+from utilities.redmats import ReducedMatrixElement_left, ReducedMatrixElement_right
 
 Sum=ASigma
 
@@ -82,8 +83,8 @@ class ReducedMatrixElement_gaute(ReducedMatrixElement):
 import sympy
 sympy.physics.braket.ReducedMatrixElement_gaute = ReducedMatrixElement_gaute
 
-i, j, k, l = map(SphFermKet, 'ijkl')
-a, b, c, d = map(SphFermKet, 'abcd')
+i, j, k, l, m  = map(SphFermKet, 'ijklm')
+a, b, c, d, e = map(SphFermKet, 'abcde')
 
 X = SphericalTensorOperator('X', S.Zero, S.Zero)
 
@@ -96,17 +97,6 @@ _report( RAm1)
 _report( X)
 _report( T)
 
-
-print
-print "*************** <j| X | i> *****************"
-print
-
-x_kj = MatrixElement(Dagger(k), X, j)
-x_kj_sph = ReducedMatrixElement(Dagger(k), X, j)
-_report(Eq(x_kj, x_kj_sph.get_direct_product_ito_self(tjs=0)))
-
-print
-_report(fcode(x_kj_sph.get_direct_product_ito_self(tjs=1)))
 
 print
 print "*************** <k| X | c> *****************"
@@ -140,9 +130,6 @@ t_ai_sph = ReducedMatrixElement(Dagger(a), T, i)
 _report(Eq(t_ai, t_ai_sph.get_direct_product_ito_self(tjs=0)))
 
 print
-_report(fcode(t_ai_sph.get_direct_product_ito_self(tjs=1)))
-
-print
 print "*************** <ab| T | ij> *****************"
 print
 
@@ -151,57 +138,95 @@ t_abij_sph = ReducedMatrixElement(SphFermBra('ab', Dagger(a), Dagger(b), reverse
 _report(Eq(t_abij, t_abij_sph.get_direct_product_ito_self(tjs=0)))
 
 print
-_report(fcode(t_abij_sph.get_direct_product_ito_self(tjs=1)))
-
-
-print
-print "*************** <i| L | > *****************"
-print
-
-l_i = MatrixElement(Dagger(i), LAm1, "")
-l_i_sph = ReducedMatrixElement(Dagger(i), LAm1, "", definition='wikipedia')
-_report( Eq(l_i, l_i_sph.get_direct_product_ito_self(tjs=0)))
-
-print
-_report(fcode(l_i_sph.get_direct_product_ito_self(tjs=1)))
-
-print
-print "*************** <ij| L | a> *****************"
-print
-
-l_aij = MatrixElement((Dagger(i), Dagger(j)), LAm1, a)
-l_aij_sph = ReducedMatrixElement(SphFermBra('ij', Dagger(i), Dagger(j)), LAm1, a, definition='wikipedia')
-_report(Eq(l_aij, l_aij_sph.get_direct_product_ito_self(tjs=0)))
-
-print
-_report(fcode(l_aij_sph.get_direct_product_ito_self(tjs=1)))
-
-print
 print "*************** <a| R | i> *****************"
 print
 
-r_ai = MatrixElement(Dagger(a), RAm1, i)
-r_ai_sph = ReducedMatrixElement(Dagger(a), RA, i, definition='wikipedia')
+r_ai = MatrixElement(Dagger(a), (RA), i)
+r_ai_sph = ReducedMatrixElement(Dagger(a), (RA), i, definition='right')
 _report( Eq(r_ai, r_ai_sph.get_direct_product_ito_self(tjs=0)))
 
 print
 _report(fcode(r_ai_sph.get_direct_product_ito_self(tjs=1)))
+
 print
 print "*************** <a| R | ij> *****************"
 print
 
 r_abij = MatrixElement((Dagger(a),Dagger(b)), RA, (i, j))
-r_abij_sph = ReducedMatrixElement(SphFermBra('ab', Dagger(a), Dagger(b)),
-        RA, SphFermKet('ij', i, j, reverse=0), definition='wikipedia')
+r_abij_sph = ReducedMatrixElement(
+        SphFermBra('ab', Dagger(a), Dagger(b)), RA,
+        SphFermKet('ij', i, j), definition='right')
 _report( Eq(r_abij, r_abij_sph.get_direct_product_ito_self(tjs=0)))
-r_abij_cross = ReducedMatrixElement(SphFermBra('aj', Dagger(a), j, reverse=True), RAm1, SphFermKet('bi', b, i))
-_report( Eq(r_abij, r_abij_cross.get_direct_product_ito_self(tjs=0)))
 
 print
 _report(fcode(r_abij_sph.get_direct_product_ito_self(tjs=1)))
 
-J_ij, J_Am1, j_a, j_i, j_j, j_b, j_c, j_k = symbols('J_ij J_Am1 j_a j_i j_j j_b j_c j_k', nonnegative=True)
-M_ij, M_Am1, m_a, m_i, m_j, m_b, m_c, m_k = symbols('M_ij M_Am1 m_a m_i m_j m_b m_c m_k')
+stop
+
+
+J_ij, J_Am1, j_a, j_i, j_j, j_b, j_c, j_k, j_m = symbols('J_ij J_A j_a j_i j_j j_b j_c j_k j_m', nonnegative=True)
+M_ij, M_Am1, m_a, m_i, m_j, m_b, m_c, m_k, m_m = symbols('M_ij M_A m_a m_i m_j m_b m_c m_k m_m')
+
+
+print
+print "****************** Right A, r_ai = X_ac*r_ci *************"
+print
+
+diagram = Symbol('XacRci')
+
+x_ac = MatrixElement(Dagger(a), X, c)
+x_ac_sph = ReducedMatrixElement(Dagger(a), X, c)
+r_ci = r_ai.subs(Dagger(a), Dagger(c))
+r_ci_sph = r_ai_sph.subs(Dagger(a), Dagger(c))
+_report( Eq(x_ac, x_ac_sph.get_direct_product_ito_self(tjs=0)))
+_report( Eq(r_ci, r_ci_sph.get_direct_product_ito_self(tjs=0)))
+
+print
+print("recoupling diagram %s" % diagram)
+print
+lhs_coupling_factor = r_ai_sph.get_inverse_reduction_factor(
+        use_dummies=False)
+expr_msc = lhs_coupling_factor*r_ci*x_ac*Sum(m_c)
+_report(Eq(diagram, expr_msc))
+expr_sph = rewrite_coupling(expr_msc, [r_ci_sph, x_ac_sph])
+_report(Eq(diagram, expr_sph))
+expr_sph = refine_phases(convert_cgc2tjs(expr_sph))
+_report(Eq(diagram, expr_sph))
+expr_sph = evaluate_sums(expr_sph, all_deltas=True)
+_report(Eq(diagram, expr_sph))
+expr_sph = apply_orthogonality(expr_sph, [m_a, m_i, M_A])
+_report(Eq(diagram, expr_sph))
+
+stop
+
+print
+print "****************** Right A, r_ai = X_im*r_am *************"
+print
+
+diagram = Symbol('XimRam')
+
+x_im = MatrixElement(Dagger(m), X, i)
+x_im_sph = ReducedMatrixElement(Dagger(m), X, i)
+r_am = r_ai.subs(i, m)
+r_am_sph = r_ai_sph.subs(i, m)
+_report( Eq(x_im, x_im_sph.get_direct_product_ito_self(tjs=0)))
+_report( Eq(r_am, r_am_sph.get_direct_product_ito_self(tjs=0)))
+
+print
+print("recoupling diagram %s" % diagram)
+print
+lhs_coupling_factor = r_ai_sph.get_inverse_reduction_factor(
+        use_dummies=False)
+expr_msc = -lhs_coupling_factor*r_am*x_im*Sum(m_m)
+_report(Eq(diagram, expr_msc))
+expr_sph = rewrite_coupling(expr_msc, [r_am_sph, x_im_sph])
+_report(Eq(diagram, expr_sph))
+expr_sph = refine_phases(convert_cgc2tjs(expr_sph))
+_report(Eq(diagram, expr_sph))
+expr_sph = evaluate_sums(expr_sph, all_deltas=True)
+_report(Eq(diagram, expr_sph))
+expr_sph = apply_orthogonality(expr_sph, [m_a, m_i, M_A])
+_report(Eq(diagram, expr_sph))
 
 print
 print "****************** Right A, r_ai = X_kc*r_acik *************"

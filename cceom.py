@@ -1,16 +1,21 @@
 from sympy.physics.secondquant import *
 from sympy import (
-    symbols, expand, pprint, Number, latex, Function, preview, Symbol
+    symbols, expand, pprint, Number, latex, Function, preview, Symbol, Eq
 )
 
+from sympy.utilities.codegen import codegen
+from sympy.utilities.codegen import ExprSplitter
+
+from utilities.indexify import indexify
+from utilities.undummy import undummy
 from utilities.ccm import get_CC_operators
 
 p,q,r,s,t,u = symbols('pqrstu',dummy=True)
 
-Hbar = ( AntiSymmetricTensor('H',(p,),(q,))*NO(Fd(p)*F(q)) +
-		AntiSymmetricTensor('H',(p,q),(r,s))*
+Hbar = ( AntiSymmetricTensor('h',(p,),(q,))*NO(Fd(p)*F(q)) +
+		AntiSymmetricTensor('h',(p,q),(r,s))*
 		NO(Fd(p)*Fd(q)*F(s)*F(r))/4 +
-		AntiSymmetricTensor('H',(p,q,r),(s,t,u))*
+		AntiSymmetricTensor('h',(p,q,r),(s,t,u))*
 		NO(Fd(p)*Fd(q)*Fd(r)*F(u)*F(t)*F(s))/36
 		)
 
@@ -20,9 +25,8 @@ P = PermutationOperator
 
 
 print
-print "*********************"
 print "Evaluating operator:"
-print latex(Hbar)
+print latex(Hbar, mode='inline')
 print
 
 
@@ -38,10 +42,9 @@ a3= Symbol('c',above_fermi=True)
 k,l,m = symbols('klm',dummy=True,below_fermi=True)
 c,d,e = symbols('def',dummy=True,above_fermi=True)
 
-
+"""
 
 print
-print "*********************"
 print "Evaluating Hbar on R_{A-1}"
 
 r_i = AntiSymmetricTensor('r',tuple([]),(k,))
@@ -94,32 +97,59 @@ print latex(val_aij)
 # preview(val_aij,output="dvi")
 
 
+"""
 
 
 print
-print "*********************"
 print "Evaluating Hbar on R_{A}"
+print
 
 r_ai = AntiSymmetricTensor('r',(c,),(k,))
 r_abij = AntiSymmetricTensor('r',(c,d),(k,l))
 R = r_ai*Fd(c)*F(k) + r_abij*NO(Fd(c)*Fd(d)*F(l)*F(k))/4
 
 print
+print "r0"
+print
+val_0 = wicks(C(Hbar, R),keep_only_fully_contracted=True)
+val_0 = evaluate_deltas(val_0)
+val_0 = substitute_dummies(val_0, new_indices=True)
+print latex(val_0, mode='inline')
+
+print
 print "r_ai"
-val_ai = wicks(Fd(i1)*F(a1)*Hbar*R,keep_only_fully_contracted=True)
+print
+val_ai = wicks(Fd(i1)*F(a1)*C(Hbar, R),keep_only_fully_contracted=True)
 val_ai = evaluate_deltas(val_ai)
 val_ai = substitute_dummies(val_ai, new_indices=True)
-print latex(val_ai)
-# preview(val_ai,output="dvi")
+print latex(val_ai, mode='inline')
+lhs1 = AntiSymmetricTensor('lhs', (a1,), (i1,))
+
+
+
 
 print
 print "r_abij"
-val_abij = wicks(NO(Fd(i1)*Fd(i2)*F(a2)*F(a1))*Hbar*R,keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
+print
+val_abij = wicks(NO(Fd(i1)*Fd(i2)*F(a2)*F(a1))*C(Hbar, R),keep_only_fully_contracted=True, simplify_kronecker_deltas=True)
 val_abij = substitute_dummies(val_abij,new_indices=True)
 val_abij = simplify_index_permutations(val_abij,[P(i1,i2), P(a1,a2)])
-print latex(val_abij)
-# preview(val_abij,output="dvi")
+print latex(val_abij, mode='inline')
+lhs2 = AntiSymmetricTensor('lhs', (a1,a2), (i1,i2))
 
+stop
+
+expr_ai = indexify(undummy(Eq(lhs1, val_ai)))
+print expr_ai
+expr_abij = indexify(undummy(Eq(-lhs2, -val_abij)))
+print expr_abij
+
+spl = ExprSplitter('diagram_RA')
+routines = spl.spawn_routines(expr_ai)
+routines.extend(spl.spawn_routines(expr_abij))
+codegen(routines, 'f95', 'code/eomcc/sympy_eomcc', to_files=True)
+
+stop
 
 
 print

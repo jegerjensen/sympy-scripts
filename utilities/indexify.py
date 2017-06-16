@@ -23,7 +23,7 @@ def indexify(expr):
                 fixed_inds.add(index)
                 label = Symbol(index.name, integer=True)
             else:
-                label = Symbol("%s_%i" %(index.name, index.dummy_index),
+                label = Symbol("%s%i" %(index.name, index.dummy_index),
                         integer=True)
 
             if index not in subsdict:
@@ -43,32 +43,38 @@ def indexify(expr):
     # substitute one AntiSymmetricTensor at a time
     for at in all_AT:
         inds = Tuple(*(at.upper.args + at.lower.args))
-        inds = inds.subs(subsdict)
 
         # define arrays with shape because it cannot always be determined from
         # indices
         if at.symbol in symbols('t lhs'):
-            shp = (total_orbs,)*(len(inds)%2) + (below_orbs,)*(len(inds)%2)
+            shp = (total_orbs-below_orbs,)*len(at.upper) + (below_orbs,)*len(at.lower)
         elif at.symbol in symbols('fvwh'):
             shp = (total_orbs,)*len(inds)
-
         elif at.symbol in symbols('r'):
-            shp = (total_orbs,)*len(at.upper) + (below_orbs,)*len(at.lower)
+            shp = (total_orbs-below_orbs,)*len(at.upper) + (below_orbs,)*len(at.lower)
         elif at.symbol in symbols('l'):
-            # shp = (below_orbs,)*len(at.upper) + (total_orbs,)*len(at.lower)
-
             # change orbit_order for speed
-            shp = (total_orbs,)*len(at.lower) + (below_orbs,)*len(at.upper)
+            shp = (total_orbs-below_orbs,)*len(at.lower) + (below_orbs,)*len(at.upper)
             inds = Tuple(*(at.lower.args + at.upper.args))
-            inds = inds.subs(subsdict)
         else:
             raise ValueError("Couldn't determine shape of %s" % at)
 
         base = IndexedBase("%s_%i" %(at.symbol, (len(inds)+1)/2), shape=shp)
 
-        new_at = base[inds.args]
-        expr = expr.subs(at, new_at)
+        inds = inds.subs(subsdict)
+        new_at = base[inds]
 
+        # shift index to account for lower bound 1 in array
+        new_inds = []
+        for i, s in zip(new_at.indices, new_at.shape):
+            if s == (total_orbs - below_orbs):
+                new_inds.append(i - below_orbs)
+            else:
+                new_inds.append(i)
+        new_at = base[new_inds]
+
+
+        expr = expr.subs(at, new_at)
         print "substituted %s for %s" %(new_at, at)
 
     return expr
